@@ -1,4 +1,4 @@
-% ****** Start of file Paper.tex ******
+% ****** Start of file apssamp.tex ******
 %
 %   This file is part of the APS files in the REVTeX 4.2 distribution.
 %   Version 4.2a of REVTeX, December 2014
@@ -7,6 +7,16 @@
 %
 %   See the REVTeX 4 README file for restrictions and more information.
 %
+% TeX'ing this file requires that you have AMS-LaTeX 2.0 installed
+% as well as the rest of the prerequisites for REVTeX 4.2
+%
+% See the REVTeX 4 README file
+% It also requires running BibTeX. The commands are as follows:
+%
+%  1)  latex apssamp.tex
+%  2)  bibtex apssamp
+%  3)  latex apssamp.tex
+%  4)  latex apssamp.tex
 %
 \documentclass[%
  reprint,
@@ -34,6 +44,8 @@
 \usepackage{graphicx}% Include figure files
 \usepackage{dcolumn}% Align table columns on decimal point
 \usepackage{bm}% bold math
+\usepackage{setspace}
+\usepackage{amsmath, xparse}
 %\usepackage{hyperref}% add hypertext capabilities
 %\usepackage[mathlines]{lineno}% Enable numbering of text and display math
 %\linenumbers\relax % Commence numbering lines
@@ -45,6 +57,8 @@
 %%total={6.5in,8.75in}, top=1.2in, left=0.9in, includefoot,
 %%height=10in,a5paper,hmargin={3cm,0.8in},
 %]{geometry}
+
+\onehalfspacing
 
 \begin{document}
 
@@ -64,10 +78,11 @@
              %  but any date may be explicitly specified
 
 \begin{abstract}
-An article usually includes an abstract, a concise summary of the work
-covered at length in the main body of the article. 
+
+Mathematical modeling and ordinary differential equations (ODEs) are a key tool used in epidemiology to model infectious disease spread in populations. There are many existing ODEs that aim to model rate of infection in a population under limiting assumptions. These models typically measure the number of susceptible, infected, and recovered individuals under the assumption that a population remains fixed and immunity is permanent. More recent adaptations of these models factor in birth, death, and exposure latency rate. However, as seen through the recent spread of COVID-19 variants, there is a necessity to consider that those who have recovered from COVID-19 can be susceptible for reinfection. This project proposes a model that incorporates an immunity loss rate variable in a typical disease spread ODE to better model and predict endemic equilibrium.
+
 \begin{description}
-\item[GitHub Link]
+\item[Code]
 Code for simulations can be found at https://github.com/ar1ba/CovidModel-Math528.
  
 \end{description}
@@ -131,10 +146,13 @@ Thus, we get the following critical points:
 From context, we know that critical point (10) represents a disease free equilibrium state where the total population is susceptible but none are infected yet. Thus, critical point (11) represents the equilibrium state during endemic conditions.
 
 Let us consider the model from a system consisting of (8) and (9) and compute the Jacobian Matrix. \\
+
 \begin{equation}
-J(S,I) = \begin{bmatrix} 
-1+\delta(\frac{-aI}{N}-\omega) & -\delta(\frac{aS}{N}+\omega) \\
-\delta(\frac{aI}{N}) & 1+\delta(\frac{aS}{N}-b) \end{bmatrix}
+J(S,I) = 
+\begin{bmatrix}
+1+\delta(\frac{-aI}{N}-\omega)  &   -\delta(\frac{aS}{N}+\omega)\\
+\delta(\frac{aI}{N})    &   1+\delta(\frac{aS}{N}-b) 
+\end{bmatrix}
 \end{equation}
 
 Inserting our endemic equilibrium point (11) into the Jacobian matrix, we find
@@ -169,7 +187,9 @@ J(S_e_q,I_e_q) = \begin{bmatrix}
 
 Thus, $T=2+\delta a_1_1$ and $D=1+\delta_a_1_1 + \delta^2a_1_2 a_2_1$. Our characteristic equation then becomes $\lambda^2 - T\lambda + D = 0$ and our roots result to: \\
 
-$\lambda_1_,_2 = \frac{2+\delta a_1_1}{2} \pm \frac{\delta}{2}\sqrt{a_1_1^2 - 4a_1_2 a_2_1}$ \\
+\begin{equation}
+\lambda_1_,_2 = \frac{2+\delta a_1_1}{2} \pm \frac{\delta}{2}\sqrt{a_1_1^2 - 4a_1_2 a_2_1}
+\end{equation} \\
 
 Stability of this system can be classified in 3 different cases. 
 Case 1: $D = 1 + \delta a_1_1 + \delta^2 a_1_2 a_2_1 < 0$ results in an unstable saddle point where $\lambda_1_,_2$ are real and have different signs. \\
@@ -177,22 +197,90 @@ Case 1: $D = 1 + \delta a_1_1 + \delta^2 a_1_2 a_2_1 < 0$ results in an unstable
 Case 2: $D = 1 + \delta a_1_1 + \delta^2 a_1_2 a_2_1 > 0$ results in 4 sub-cases. When $T^2-4D>0$, $\lambda_1_,_2$ are real with the same sign, and either results in a stable node $(T<0)$ and unstable node $(T>0)$. When $T^2-4D<0$, $\lambda_1_,_2$ are complex conjugates and result in a stable spiral $(T<0)$ or unstable spiral $(T>0)$. When $T^2-4D=0$, $\lambda_1_,_2$ are repeated real values and result in a stable degenerate sink $(T<0)$ or unstable degenerate sink $(T>0)$. Lastly, when $T=0$, $\lambda_1_,_2$ are pure imaginary values and result in a neutrally stable center. \\
 
 Case 3: $D=0$ results in a line of fixed points or "comb" where $\lambda_1_,_2 = 0,T$ and is stable if $T<0$ or unstable if $T>0$.\\
-We can map the stability of our system in a trace-determinant plane as so: \\
 
-\includegraphics[width=80mm,scale=0.5]{phaseplane.jpg}
-ADD FIGURE CAPTION
 \section{\label{sec:level1}Simulating Model with Parameters Based on COVID-19 data in Chapel Hill, NC\protect\\}
 
-Using the Centers for Disease Control and Prevention (CDC)'s COVID Data Tracker, I collected relevant data on infection and treatment rates in Orange County between 2020 and 2022 and utilized an approximate COVID immunity loss rate value based on average antibody and vaccine efficacy from an article in Nature. Our total population number is derived from the U.S. Census Bureau database. Specific parameters are listed in the Figure 2 Caption. 
+Using the Centers for Disease Control and Prevention (CDC)'s COVID Data Tracker, I collected relevant data on infection and treatment rates in Orange County in 2021 and utilized an approximate COVID immunity loss rate value based on average antibody and vaccine efficacy from an article in Nature. Our total population number is derived from the U.S. Census Bureau database. Specific parameters are listed in each figure caption. 
+
+
+\begin{figure}[h]
+\caption{Modelling 2021 Orange County COVID Data}
+\centering
+\includegraphics[width=80mm,scale=0.5]{2021-OrangeCountyData.png}
+\end{figure}
+
+Above, we model existing 2021 Covid-19 data in Orange County $(N=14,884, a=0.84,b=0.4, \omega = 0.265, \delta = 3.65)$. Our endemic equilibrium point $(S_e,I_e) = (3544, 6463)$ results in the following Jacobian Matrix: \\
+\begin{equation}
+J(S_e,I_e) = \begin{bmatrix} 
+3.30 & -1.70 \\
+1.33 & 1 \end{bmatrix}
+\end{equation} \\
+Here $T=-0.30$, $D=2.69$, and $T^2-4D=-10.67$ thus follows case 2, where $\lambda_1_,_2$ are complex conjugates. This model results in a stable spiral. \\
+
+For the next couple of simulations, I take a random subset of the population data $(N=100)$ to better image immunity dynamics. The $a, b, \omega$ values remain constant to the 2021 Orange County data, however, now I explore the effects of altering the $\delta$ value.
+
+\begin{figure}[h]
+\caption{Modelling Subset Population COVID Data $(\delta = 2)$}
+\centering
+\includegraphics[width=80mm,scale=0.5]{n=100,a=.84,b=.4,d=2.png}
+\end{figure}
+
+Modelling subset $(N=100)$ data using $\delta = 2$, our endemic equilibrium point is $(S_e, I_e)= (47.6,20.9)$, and our following Jacobian Matrix is: 
+
+\begin{equation}
+J(S_e,I_e) = \begin{bmatrix} 
+2.76 & -1.33 \\
+0.35 & 1 \end{bmatrix}
+\end{equation} \\
+
+Here $T=3.76$, $D=3.23$, and $T^2-4D=1.24$ thus follows case 2 and our previous model, where $\lambda_1_,_2$ are real with the same sign. This model results in an unstable node. \\
+
+\begin{figure}[h]
+\caption{Modelling Subset Population COVID Data $(\delta = 3.6)$}
+\centering
+\includegraphics[width=80mm,scale=0.5]{n=100,a=.84,b=.4,d=3.6.png}
+\end{figure}
+
+Modelling subset $(N=100)$ data using $\delta = 3.6$, our endemic equilibrium point is $(S_e, I_e)= (47.6,20.9)$, and our following Jacobian Matrix is: 
+
+\begin{equation}
+J(S_e,I_e) = \begin{bmatrix} 
+6.87 & -2.43 \\
+0.64 & 1 \end{bmatrix}
+\end{equation} \\
+
+Here $T=7.87$, $D=8.42$, and $T^2-4D=28.2$ thus follows case 2 and our previous model, where $\lambda_1_,_2$ are real with the same sign. This model results in an unstable node. \\
+
+\begin{figure}[h]
+\caption{Modelling Subset Population COVID Data $(\delta = 4.5)$}
+\centering
+\includegraphics[width=80mm,scale=0.5]{n=100,a=.84,b=.4,d=4.5.png}
+\end{figure}
+
+Modelling subset $(N=100)$ data using $\delta = 2$, our endemic equilibrium point is $(S_e, I_e)= (47.6,20.9)$, and our following Jacobian Matrix is: 
+
+\begin{equation}
+J(S_e,I_e) = \begin{bmatrix} 
+9.92 & -2.99 \\
+0.79 & 1 \end{bmatrix}
+\end{equation} \\
+
+Here $T=10.9$, $D=12.3$, and $T^2-4D=70$ thus follows case 2 and our previous model, where $\lambda_1_,_2$ are real with the same sign. This model results in an unstable node. \\
+
+
+\section{\label{sec:level1}Conclusions\protect\\}
+
+Based on Covid-19 studies, people infected and recovering from Covid-19 produce an antibody response to the virus, but these antibodies decrease in a short amount of time. As the immune system relies heavily on antibodies in the defense against Covid-19, it is possible that with a decrease in antibodies, recovered patients can become reinfected in seasonal waves. Especially with varying vaccine efficacy for new Covid strains, it is important to consider immunity loss when modeling Covid disease spread. In the future, this model should also consider exposure latency time as well as birth and death rates. By creating an ODE to describe disease spread behavior, we can visualize directional changes in the system to help discover trends in the future. 
+
 
 % The \nocite command causes all entries in a bibliography to be printed out
 % whether or not they are actually referenced in the text. This is appropriate
 % for the sample file to show the different styles of references, but authors
 % most likely will not want to use it.
-%\nocite{*}
+\nocite{*}
 
-%\bibliography{apssamp}% Produces the bibliography via BibTeX.
+\bibliography{apssamp}% Produces the bibliography via BibTeX.
 
 \end{document}
 %
-% ****** End of file apssamp.tex ******
+% ****** End of file Paper.tex ******
